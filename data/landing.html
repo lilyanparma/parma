@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام المبيعات المتكامل - الصفحة الرئيسية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-light: #E0DEFF;
+            --dark: #1A1A2E;
+            --bg-color: linear-gradient(135deg, #F8FAFC, #e6f0ff);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --card-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --gray: #718096;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .landing-container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--glass-bg);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--card-shadow);
+            padding: 48px 32px 40px 32px;
+            margin: 40px 0;
+            text-align: center;
+            backdrop-filter: blur(8px);
+        }
+        .logo {
+            width: 90px; height: 90px; border-radius: 24px;
+            background: linear-gradient(135deg, var(--primary), #FF6584);
+            color: white; font-size: 2.8rem; display: flex;
+            align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.4);
+        }
+        h1 {
+            color: var(--dark);
+            font-size: 2.2rem;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+        .desc {
+            color: var(--gray);
+            font-size: 1.15rem;
+            margin-bottom: 32px;
+        }
+        .features {
+            text-align: right;
+            margin-bottom: 36px;
+        }
+        .features li {
+            color: var(--dark);
+            font-size: 1.05rem;
+            margin-bottom: 10px;
+            list-style: none;
+            position: relative;
+            padding-right: 28px;
+        }
+        .features li:before {
+            content: '\f058';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--primary);
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .action-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.2);
+        }
+        .login-btn {
+            background: linear-gradient(135deg, var(--primary), #564FD9);
+            color: white;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(108, 99, 255, 0.3);
+        }
+        .try-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .try-btn:hover {
+            background: #fff;
+            color: var(--dark);
+        }
+        @media (max-width: 600px) {
+            .landing-container { padding: 28px 8px 24px 8px; }
+            h1 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <div class="logo"><i class="fas fa-store"></i></div>
+        <h1>نظام المبيعات المتكامل</h1>
+        <div class="desc">
+            منصة ذكية لإدارة المبيعات والمخزون والفواتير بسهولة واحترافية.<br>
+            صُممت لتناسب جميع الأنشطة التجارية وتوفر لك تحكمًا كاملاً في عملياتك.
+        </div>
+        <ul class="features">
+            <li>إدارة المنتجات والمخزون بشكل فوري وسهل</li>
+            <li>إصدار وتتبع الفواتير والمبيعات</li>
+            <li>صلاحيات متعددة للمستخدمين (مدير، موظف)</li>
+            <li>تقارير أرباح وعمليات مفصلة</li>
+            <li>واجهة عربية عصرية وسهلة الاستخدام</li>
+        </ul>
+        <div class="actions">
+            <button class="action-btn login-btn" onclick="window.location.href='login.html'">
+                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+            </button>
+            <button class="action-btn try-btn" onclick="window.location.href='add-user.html'">
+                <i class="fas fa-user-plus"></i> تجربة النظام / إنشاء حساب
+            </button>
+        </div>
+    </div>
+</body>
+</html> 

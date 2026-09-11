@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الفواتير والأرباح المتكامل</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* === نظام التصميم المحسن === */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent-color: #4895ef;
+            --profit-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #3498db;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --light-text-color: #666666;
+            --border-color: #e1e5e9;
+            --shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+            --border-radius-large: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gradient-primary: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            --gradient-success: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            --gradient-danger: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            --gradient-warning: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            --gradient-info: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', 'Tahoma', sans-serif;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 40px 30px;
+            border-radius: var(--border-radius-large);
+            margin-bottom: 32px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            font-weight: 400;
+        }
+
+        .view-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .view-btn {
+            border: none;
+            border-radius: 50px;
+            padding: 20px 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 70px;
+        }
+
+        .view-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .view-btn:hover::before {
+            left: 100%;
+        }
+
+        .view-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .view-btn.sales-btn {
+            background: var(--gradient-primary);
+        }
+
+        .view-btn.products-btn {
+            background: var(--gradient-info);
+        }
+
+        .view-btn.reports-btn {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .view-btn.active {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            filter: brightness(1.1);
+        }
+
+        .view-btn i {
+            margin-left: 12px;
+            font-size: 1.4rem;
+        }
+
+        .content-section {
+            display: none;
+            background: var(--card-bg);
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow);
+            padding: 32px;
+            margin-bottom: 24px;
+            animation: slideDown 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid var(--border-color);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 28px;
+            padding: 24px;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+        label i {
+            margin-left: 6px;
+        }
+
+        select,
+        input[type="date"],
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            color: var(--text-color);
+        }
+
+        select:focus,
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .action-btn {
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            background: var(--gradient-primary);
+            color: white;
+            margin: 8px 12px 8px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn.secondary-btn {
+            background: var(--gradient-info);
+        }
+
+        .action-btn.print-btn {
+            background: var(--gradient-warning);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .action-btn i {
+            margin-left: 8px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 28px 24px;
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .summary-cards .card:nth-child(1)::before {
+            background: var(--gradient-info);
+        }
+
+        .summary-cards .card:nth-child(2)::before {
+            background: var(--gradient-primary);
+        }
+
+        .summary-cards .card:nth-child(3)::before {
+            background: var(--gradient-danger);
+        }
+
+        .summary-cards .card:nth-child(4)::before {
+            background: var(--gradient-success);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card h3 {
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            color: var(--light-text-color);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card h3 i {
+            margin-left: 8px;
+        }
+
+        .card-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .total-sales {
+            color: var(--primary);
+        }
+
+        .total-cost,
+        .loss {
+            color: var(--danger-color);
+        }
+
+        .total-profit,
+        .profit {
+            color: var(--profit-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th,
+        td {
+            padding: 16px 20px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        th i {
+            margin-left: 8px;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ==== بداية التنسيقات الجديدة ==== */
+
+        .returned-row {
+            background-color: #fff5f5 !important;
+            opacity: 0.8;
+        }
+
+        .returned-row td {
+            text-decoration: line-through;
+            color: #e53e3e;
+        }
+
+        /* ==== نهاية التنسيقات الجديدة ==== */
+
+        .chart-container {
+            background: white;
+            padding: 28px;
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+            margin: 48px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #report-display-area .report-header {
+            background: linear-gradient(135deg, #6c757d, #495057) !important;
+            color: white !important;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        #report-display-area .card {
+            text-align: center;
+        }
+
+        #report-display-area .card::before {
+            border-left: 4px solid var(--primary);
+            border-top: none;
+            background: none;
+        }
+
+        #report-display-area table th {
+            background: #2b2d42 !important;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: var(--border-radius-large);
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--light-text-color);
+            transition: var(--transition);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        #invoice-details h4,
+        #batches-details h4 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 5px;
+            color: var(--primary);
+        }
+
+        #invoice-details p,
+        #batches-details p {
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        #invoice-details p span,
+        #batches-details p span {
+            font-weight: bold;
+        }
+
+        @media print {
+            body {
+                background-color: white !important;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                padding: 10px;
+            }
+            .view-buttons,
+            .filters,
+            .action-btn,
+            .header,
+            #sales-tab,
+            #products-tab {
+                display: none !important;
+            }
+            .content-section.active,
+            .card,
+            table {
+                box-shadow: none !important;
+                border: 1px solid #ddd;
+                padding: 10px;
+            }
+            #report-display-area .report-header {
+                background: #eee !important;
+                color: black !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            #report-display-area table th {
+                background: #ccc !important;
+                color: black !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            #report-display-area {
+                display: block !important;
+            }
+			  #report-display-area .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* لتقسيم المساحة إلى 3 أعمدة متساوية */
+        gap: 15px; /* لترك مسافة بسيطة بين البطاقات */
+    }
+
+    #report-display-area .card h3 {
+        font-size: 0.9rem; /* تصغير حجم الخط لاسم الحقل */
+    }
+
+    #report-display-area .card .card-value {
+        font-size: 1.2rem; /* تصغير حجم خط القيمة */
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            .header {
+                padding: 24px 20px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .view-buttons {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .filters {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                padding: 20px;
+            }
+            .summary-cards {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 16px;
+            }
+            .content-section {
+                padding: 20px;
+            }
+            table {
+                font-size: 0.9rem;
+            }
+            th,
+            td {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-file-invoice-dollar"></i> نظام الفواتير والأرباح المتكامل</h1>
+            <p>إدارة كاملة لفواتير المبيعات والخدمات وحساب الأرباح والخسائر</p>
+        </header>
+        
+        <div class="view-buttons">
+            <button class="view-btn sales-btn" onclick="toggleView('sales-tab', this)">
+                <i class="fas fa-cash-register"></i> تحليلات المبيعات
+            </button>
+            <button class="view-btn products-btn" onclick="toggleView('products-tab', this)">
+                <i class="fas fa-boxes"></i> عرض المنتجات
+            </button>
+            <button class="view-btn reports-btn" onclick="toggleView('reports-tab', this)">
+                <i class="fas fa-file-pdf"></i> توليد التقارير
+            </button>
+        </div>
+
+        <div id="sales-tab" class="content-section">
+            <div class="filters">
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar-alt"></i> من تاريخ</label>
+                    <input type="date" id="start-date">
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar-alt"></i> إلى تاريخ</label>
+                    <input type="date" id="end-date">
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-clinic-medical"></i> الصيدلية</label>
+                    <select id="pharmacy-filter"><option value="">الكل</option></select>
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-credit-card"></i> طريقة الدفع</label>
+                    <select id="payment-filter"><option value="">الكل</option><option value="cash">نقدي</option><option value="card">بطاقة</option></select>
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 24px;">
+                <button class="action-btn" onclick="filterInvoices()"><i class="fas fa-filter"></i> تطبيق الفلتر</button>
+                <button class="action-btn secondary-btn" onclick="resetFilters()"><i class="fas fa-redo"></i> إعادة تعيين</button>
+            </div>
+     
+            <div class="summary-cards">
+                <div class="card"><h3><i class="fas fa-receipt"></i> عدد الفواتير</h3><div class="card-value" id="total-invoices">0</div></div>
+                <div class="card"><h3><i class="fas fa-money-bill-wave"></i> إجمالي المبيعات</h3><div class="card-value total-sales" id="total-sales">0.00 د.م</div></div>
+                <div class="card"><h3><i class="fas fa-money-bill-alt"></i> إجمالي التكلفة</h3><div class="card-value total-cost" id="total-cost">0.00 د.م</div></div>
+                <div class="card"><h3><i class="fas fa-chart-line"></i> صافي الربح</h3><div class="card-value total-profit" id="total-profit">0.00 د.م</div></div>
+            </div>
+     
+            <div class="chart-container"><canvas id="sales-chart"></canvas></div>
+            
+            <div style="overflow-x: auto;">
+                 <table id="invoices-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> رقم الفاتورة</th>
+                            <th><i class="fas fa-calendar"></i> التاريخ</th>
+                            <th><i class="fas fa-pills"></i> المنتجات</th>
+                            <th><i class="fas fa-sort-numeric-up"></i> الكمية الصافية</th>
+                            <th><i class="fas fa-money-bill"></i> الإجمالي الصافي</th>
+                            <th><i class="fas fa-calculator"></i> التكلفة الصافية</th>
+                            <th><i class="fas fa-chart-line"></i> الربح الصافي</th>
+                            <th><i class="fas fa-info-circle"></i> التفاصيل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="products-tab" class="content-section">
+            <div class="filters">
+                 <div class="filter-group">
+                    <label><i class="fas fa-search"></i> بحث عن منتج</label>
+                    <input type="text" id="product-search" placeholder="اكتب اسم أو كود المنتج">
+                </div>
+            </div>
+             <div style="text-align: center; margin-bottom: 24px;">
+                <button class="action-btn" onclick="searchProducts()"><i class="fas fa-search"></i> بحث</button>
+                <button class="action-btn secondary-btn" onclick="resetProductSearch()"><i class="fas fa-redo"></i> إعادة تعيين</button>
+             </div>
+            
+            <div style="overflow-x: auto; margin-top: 20px;">
+                <table id="products-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-barcode"></i> كود المنتج</th>
+                            <th><i class="fas fa-pills"></i> اسم المنتج</th>
+                            <th><i class="fas fa-sort-numeric-up"></i> إجمالي الكمية</th>
+                            <th><i class="fas fa-clock"></i> آخر تعديل</th>
+                            <th><i class="fas fa-eye"></i> عرض الدفعات</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="reports-tab" class="content-section">
+             <div class="filters">
+                <div class="filter-group">
+                    <label for="report-year"><i class="fas fa-calendar-alt"></i> اختر السنة</label>
+                    <select id="report-year"></select>
+                </div>
+                <div class="filter-group">
+                    <label for="report-month"><i class="fas fa-calendar"></i> اختر الشهر</label>
+                    <select id="report-month"></select>
+                </div>
+                <div class="filter-group">
+                    <label for="report-type"><i class="fas fa-file-alt"></i> نوع التقرير</label>
+                    <select id="report-type">
+                         <option value="sales">تقرير المبيعات والأرباح</option>
+                         <option value="services">تقرير الخدمات</option>
+                         <option value="products">تقرير المنتجات والمخزون</option>
+                    </select>
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 24px;">
+                <button class="action-btn" onclick="generateReport()"><i class="fas fa-file-pdf"></i> توليد التقرير</button>
+                <button class="action-btn print-btn" onclick="printReport()"><i class="fas fa-print"></i> طباعة</button>
+            </div>
+            
+             <hr style="margin: 25px 0; border: 1px solid var(--border-color);">
+            <div id="report-display-area">
+                <div style="text-align: center; padding: 40px; color: var(--light-text-color);">
+                    <i class="fas fa-file-alt" style="font-size: 3rem; margin-bottom: 16px; opacity: 0.5;"></i>
+                    <p style="font-size: 1.1rem;">الرجاء تحديد الفترة ونوع التقرير ثم الضغط على "توليد التقرير".</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="invoice-modal" class="modal">
+        <div class="modal-content">
+             <span class="close-modal" onclick="closeModal('invoice-modal')">&times;</span>
+            <h2 id="modal-title" style="margin-bottom: 20px; color: var(--primary);"><i class="fas fa-file-invoice"></i> تفاصيل الفاتورة</h2>
+            <div id="invoice-details"></div>
+        </div>
+    </div>
+    
+    <div id="batches-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('batches-modal')">&times;</span>
+            <h2 id="batches-modal-title" style="margin-bottom: 20px; color: var(--primary);"><i class="fas fa-layer-group"></i> دفعات المنتج</h2>
+            <div id="batches-details"></div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRtJBPOjpfXXfsaDo98E_NTT7KWzz8gj4",
+            authDomain: "pharmacy-system-9def6.firebaseapp.com",
+            databaseURL: "https://pharmacy-system-9def6-default-rtdb.firebaseio.com",
+            projectId: "pharmacy-system-9def6",
+            storageBucket: "pharmacy-system-9def6.appspot.com",
+            messagingSenderId: "630855008414",
+            appId: "1:630855008414:web:b464bcb81c8a2091d0fb8f",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // Global variables
+        let salesChart = null;
+        let allInvoices = [];
+        let allProducts = [];
+        let allServices = [];
+        let filteredInvoices = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initDates();
+            loadData();
+           // toggleView('sales-tab', document.querySelector('.sales-btn'));
+        });
+
+        function initDates() {
+            const today = new Date();
+           const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1, 12, 0, 0); // ضبط الوقت إلى 12:00 ظهراً
+            document.getElementById('start-date').valueAsDate = firstDayOfMonth;
+            document.getElementById('end-date').valueAsDate = today;
+
+            const yearSelect = document.getElementById('report-year');
+            const currentYear = today.getFullYear();
+            yearSelect.innerHTML = '';
+            for (let year = 2023; year <= currentYear; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+            yearSelect.value = currentYear;
+            updateMonths();
+            document.getElementById('report-month').value = today.getMonth() + 1;
+        }
+        
+        function updateMonths() {
+            const monthSelect = document.getElementById('report-month');
+            monthSelect.innerHTML = '';
+            const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+            months.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index + 1;
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+        }
+        
+        async function loadData() {
+            try {
+                const [invoicesSnapshot, productsSnapshot, servicesSnapshot] = await Promise.all([
+                    database.ref('invoices').once('value'),
+                    database.ref('products').once('value'),
+                    database.ref('services').once('value')
+                ]);
+
+                allInvoices = [];
+                invoicesSnapshot.forEach(childSnapshot => {
+                    const invoice = childSnapshot.val();
+                    invoice.id = childSnapshot.key;
+                    allInvoices.push(invoice);
+                });
+
+                allProducts = [];
+                productsSnapshot.forEach(childSnapshot => {
+                    const product = childSnapshot.val();
+                    product.id = childSnapshot.key;
+                    allProducts.push(product);
+                });
+
+                allServices = [];
+                servicesSnapshot.forEach(childSnapshot => {
+                    const service = childSnapshot.val();
+                    service.id = childSnapshot.key;
+                    allServices.push(service);
+                });
+
+                updatePharmacyFilter();
+                filterInvoices();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('حدث خطأ أثناء تحميل البيانات');
+            }
+        }
+        
+        function updatePharmacyFilter() {
+            const pharmacyFilter = document.getElementById('pharmacy-filter');
+            pharmacyFilter.innerHTML = '<option value="">الكل</option>';
+            const pharmacies = [...new Set(allInvoices.map(invoice => invoice.pharmacy))].filter(p => p).sort();
+            pharmacies.forEach(pharmacy => {
+                const option = document.createElement('option');
+                option.value = pharmacy;
+                option.textContent = pharmacy;
+                pharmacyFilter.appendChild(option);
+            });
+        }
+        
+        function toggleView(viewId, clickedButton) {
+            const targetSection = document.getElementById(viewId);
+            const isAlreadyActive = clickedButton.classList.contains('active');
+
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (!isAlreadyActive) {
+                targetSection.classList.add('active');
+                clickedButton.classList.add('active');
+            }
+        }
+
+        function filterInvoices() {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const pharmacy = document.getElementById('pharmacy-filter').value;
+            const paymentMethod = document.getElementById('payment-filter').value;
+
+            filteredInvoices = allInvoices.filter(invoice => {
+                if (!invoice.date) return false;
+                const invoiceDate = new Date(invoice.date);
+                const endOfDay = new Date(endDate);
+                endOfDay.setHours(23, 59, 59, 999);
+                
+                if (startDate && invoiceDate < new Date(startDate)) return false;
+                if (endDate && invoiceDate > endOfDay) return false;
+                if (pharmacy && invoice.pharmacy !== pharmacy) return false;
+                if (paymentMethod && invoice.paymentMethod !== paymentMethod) return false;
+                return true;
+            });
+
+            updateInvoicesTable();
+            updateSummaryCards();
+            updateSalesChart();
+        }
+        
+        // ===================================
+        // ==== بداية الدوال المعدلة ====
+        // ===================================
+
+        function calculateInvoiceTotals(invoice) {
+            let totalCost = 0;
+            let netFinalPrice = 0; // السعر النهائي الصافي بعد حساب المرتجعات
+            const items = invoice.items ? Object.values(invoice.items) : [];
+            // نستخدم subTotal الأصلي لحساب نسبة الخصم
+            const subTotal = invoice.subTotal || items.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 0)), 0);
+            
+            items.forEach(item => {
+                const itemCost = item.cost || 0;
+                const originalQuantity = item.quantity || 0;
+                const returnedQuantity = item.quantityReturned || 0;
+                const netQuantity = originalQuantity - returnedQuantity;
+
+                // نحسب التكلفة والسعر فقط للمنتجات التي لم يتم إرجاعها بالكامل
+                if (netQuantity > 0) {
+                     // نطبق نسبة الخصم الأصلية على سعر المنتج
+                     const discountRatio = (subTotal > 0) ? ((invoice.finalPrice || subTotal) / subTotal) : 1;
+                     const itemEffectivePrice = (item.price || 0) * discountRatio;
+
+                     netFinalPrice += itemEffectivePrice * netQuantity;
+                     totalCost += itemCost * netQuantity;
+                }
+            });
+
+            const totalProfit = netFinalPrice - totalCost;
+            return { totalCost, totalProfit, netFinalPrice };
+        }
+        
+        function updateSummaryCards() {
+            document.getElementById('total-invoices').textContent = filteredInvoices.length;
+
+            let totalSales = 0;
+            let totalCosts = 0;
+
+            filteredInvoices.forEach(invoice => {
+                // نستخدم الدالة الجديدة التي تحسب المجاميع الصافية
+                const { totalCost, netFinalPrice } = calculateInvoiceTotals(invoice);
+                totalSales += netFinalPrice;
+                totalCosts += totalCost;
+            });
+            
+            const totalProfit = totalSales - totalCosts;
+
+            document.getElementById('total-sales').textContent = totalSales.toFixed(2) + ' د.م';
+            document.getElementById('total-cost').textContent = totalCosts.toFixed(2) + ' د.م';
+            
+            const profitElement = document.getElementById('total-profit');
+            profitElement.textContent = totalProfit.toFixed(2) + ' د.م';
+            profitElement.className = totalProfit >= 0 ? 'card-value total-profit' : 'card-value loss';
+        }
+
+        function updateInvoicesTable() {
+            const tbody = document.querySelector('#invoices-table tbody');
+            tbody.innerHTML = '';
+            if (filteredInvoices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد فواتير تطابق الفلتر</td></tr>';
+                return;
+            }
+
+            filteredInvoices.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            filteredInvoices.forEach(invoice => {
+                // نستخدم الدالة الجديدة للحصول على القيم الصافية
+                const { totalCost, totalProfit, netFinalPrice } = calculateInvoiceTotals(invoice);
+
+                const totalOriginalQuantity = invoice.items ? Object.values(invoice.items).reduce((sum, i) => sum + (i.quantity || 0), 0) : 0;
+                const totalReturnedQuantity = invoice.items ? Object.values(invoice.items).reduce((sum, i) => sum + (i.quantityReturned || 0), 0) : 0;
+                const netQuantity = totalOriginalQuantity - totalReturnedQuantity;
+                
+                // إضافة كلاس لتمييز الصف إذا كان يحتوي على مرتجعات
+                const rowClass = totalReturnedQuantity > 0 ? 'returned-row' : '';
+
+                const row = document.createElement('tr');
+                row.className = rowClass;
+
+                row.innerHTML = `
+                    <td>${invoice.id.substring(invoice.id.length - 6)}</td>
+                    <td>${new Date(invoice.date).toLocaleDateString('en-GB')}</td>
+                    <td>${invoice.items ? Object.values(invoice.items).map(i => i.name).join(', ') : 'N/A'}</td>
+                    <td>${netQuantity}</td>
+                    <td>${(netFinalPrice || 0).toFixed(2)} د.م</td>
+                    <td class="loss">${totalCost.toFixed(2)} د.م</td>
+                    <td class="${totalProfit >= 0 ? 'profit' : 'loss'}">${totalProfit.toFixed(2)} د.م</td>
+                    <td><button class="action-btn" style="padding: 8px 12px; font-size: 0.9rem;" onclick="showInvoiceDetails('${invoice.id}')"><i class="fas fa-eye"></i></button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // ===================================
+        // ==== نهاية الدوال المعدلة ====
+        // ===================================
+
+       function resetFilters() {
+    document.getElementById('start-date').value = ''; // مسح حقل تاريخ البداية
+    document.getElementById('end-date').value = '';   // مسح حقل تاريخ النهاية
+    document.getElementById('pharmacy-filter').value = '';
+    document.getElementById('payment-filter').value = '';
+    filterInvoices();
+}
+        
+        function updateSalesChart() {
+            const ctx = document.getElementById('sales-chart').getContext('2d');
+            const salesByDate = {};
+            filteredInvoices.forEach(invoice => {
+                const dateStr = invoice.date ? new Date(invoice.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'غير معروف';
+                if (!salesByDate[dateStr]) salesByDate[dateStr] = { sales: 0, profit: 0 };
+                const { totalProfit, netFinalPrice } = calculateInvoiceTotals(invoice);
+                salesByDate[dateStr].sales += netFinalPrice;
+                salesByDate[dateStr].profit += totalProfit;
+            });
+            const labels = Object.keys(salesByDate).sort((a,b) => new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-')));
+            
+            if (salesChart) salesChart.destroy();
+            salesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'المبيعات اليومية', data: labels.map(date => salesByDate[date].sales), backgroundColor: 'rgba(67, 97, 238, 0.7)', yAxisID: 'y' },
+                        { label: 'الأرباح اليومية', data: labels.map(date => salesByDate[date].profit), backgroundColor: 'rgba(46, 204, 113, 0.7)', yAxisID: 'y1' }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    scales: { 
+                        y: { beginAtZero: true, position: 'left', title: { display: true, text: 'المبيعات (د.م)' } },
+                        y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'الأرباح (د.م)' } }
+                    }, 
+                    plugins: { title: { display: true, text: 'تطور المبيعات والأرباح حسب التاريخ', font: { size: 16, family: 'Tajawal' } }, legend: { labels: { font: { family: 'Tajawal' } } } }
+                }
+            });
+        }
+
+        function searchProducts() {
+            const searchTerm = document.getElementById('product-search').value.toLowerCase();
+            const tbody = document.querySelector('#products-table tbody');
+            tbody.innerHTML = '';
+            
+            const filtered = allProducts.filter(p => (p.name && p.name.toLowerCase().includes(searchTerm)) || (p.id && p.id.toLowerCase().includes(searchTerm)));
+            if (filtered.length === 0) {
+                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد منتجات تطابق البحث</td></tr>';
+                 return;
+            }
+
+            filtered.forEach(product => {
+                const totalQuantity = product.batches ? Object.values(product.batches).reduce((sum, batch) => sum + (batch.quantity || 0), 0) : 0;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.id || ''}</td>
+                    <td>${product.name || ''}</td>
+                    <td>${totalQuantity}</td>
+                    <td>${product.lastUpdated ? new Date(product.lastUpdated).toLocaleString('en-GB') : 'غير متوفر'}</td>
+                    <td><button class="action-btn" style="padding: 8px 12px; font-size:0.9rem;" onclick="showBatchesDetails('${product.id}')"><i class="fas fa-eye"></i></button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function resetProductSearch() {
+            document.getElementById('product-search').value = '';
+            searchProducts();
+        }
+        
+        async function generateReport() {
+            const reportType = document.getElementById('report-type').value;
+            if (reportType === 'sales') {
+                await generateSalesReport();
+            } else if (reportType === 'services') {
+                await generateServicesReport();
+            } else if (reportType === 'products') {
+                generateProductsReport();
+            }
+        }
+
+        async function generateSalesReport() {
+            const year = document.getElementById('report-year').value;
+            const month = document.getElementById('report-month').value;
+            const reportContainer = document.getElementById('report-display-area');
+            reportContainer.innerHTML = `<div class="loading-spinner"></div> <p style="text-align:center;">جاري توليد التقرير...</p>`;
+            await new Promise(r => setTimeout(r, 200));
+
+            const filtered = allInvoices.filter(invoice => {
+                if (!invoice.date) return false;
+                const itemDate = new Date(invoice.date);
+                return itemDate.getFullYear() == year && (itemDate.getMonth() + 1) == month;
+            });
+
+            if (filtered.length === 0) {
+                reportContainer.innerHTML = '<p style="text-align:center; padding: 20px;">لا توجد معاملات في هذه الفترة.</p>';
+                return;
+            }
+
+            let totalSales = 0, totalCosts = 0, reportRows = '';
+            for (const invoice of filtered) {
+                const items = invoice.items ? Object.values(invoice.items) : [];
+                
+                for (const item of items) {
+                    const originalQuantity = item.quantity || 0;
+                    const returnedQuantity = item.quantityReturned || 0;
+                    const netQuantity = originalQuantity - returnedQuantity;
+
+                    if (originalQuantity > 0) { // عرض جميع البنود التي تم بيعها أصلاً
+                        const subTotal = invoice.subTotal || items.reduce((sum, i) => sum + ((i.price || 0) * (i.quantity || 0)), 0);
+                        const discountRatio = (subTotal > 0) ? ((invoice.finalPrice || subTotal) / subTotal) : 1;
+                        const itemEffectivePrice = (item.price || 0) * discountRatio;
+                        const itemTotalEffectivePrice = itemEffectivePrice * netQuantity;
+                        const itemTotalCost = (item.cost || 0) * netQuantity;
+                        const itemProfit = itemTotalEffectivePrice - itemTotalCost;
+                        
+                        totalSales += itemTotalEffectivePrice;
+                        totalCosts += itemTotalCost;
+
+                        const rowClass = netQuantity <= 0 ? 'class="returned-row"' : '';
+
+                        reportRows += `
+                            <tr ${rowClass}>
+                                <td>${new Date(invoice.date).toLocaleDateString('en-GB')}</td>
+                                <td>${invoice.id.substring(invoice.id.length - 6)}</td>
+                                <td>${item.name || 'غير معروف'}</td>
+                                <td>${netQuantity} (بيع ${originalQuantity}، إرجاع ${returnedQuantity})</td>
+                                <td>${itemTotalEffectivePrice.toFixed(2)} د.م</td>
+                                <td class="loss">${itemTotalCost.toFixed(2)} د.م</td>
+                                <td class="${itemProfit >= 0 ? 'profit' : 'loss'}">${itemProfit.toFixed(2)} د.م</td>
+                            </tr>
+                        `;
+                    }
+                }
+            }
+            
+            const netProfit = totalSales - totalCosts;
+            const arabicMonths = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+            const reportHTML = `
+                <div class="report-header">
+                    <h2>كشف أرباح المبيعات</h2>
+                    <p>لشهر ${arabicMonths[month - 1]} ${year}</p>
+                </div>
+                <div class="summary-cards">
+                    <div class="card"><h3><i class="fas fa-money-bill-wave"></i> إجمالي المبيعات</h3><div class="card-value total-sales">${totalSales.toFixed(2)} د.م</div></div>
+                    <div class="card"><h3><i class="fas fa-money-bill-alt"></i> إجمالي التكاليف</h3><div class="card-value total-cost">${totalCosts.toFixed(2)} د.م</div></div>
+                    <div class="card"><h3><i class="fas fa-chart-line"></i> صافي الربح</h3><div class="card-value ${netProfit >= 0 ? 'total-profit' : 'loss'}">${netProfit.toFixed(2)} د.م</div></div>
+                 </div>
+                <div style="overflow-x: auto;">
+                    <table id="report-table">
+                        <thead><tr><th>تاريخ الفاتورة</th><th>رقم الفاتورة</th><th>المنتج</th><th>الكمية الصافية</th><th>الإجمالي بعد الخصم</th><th>التكلفة الإجمالية</th><th>الربح</th></tr></thead>
+                        <tbody>${reportRows}</tbody>
+                    </table>
+                </div>
+            `;
+            reportContainer.innerHTML = reportHTML;
+        }
+        
+        async function generateServicesReport() {
+            const year = document.getElementById('report-year').value;
+            const month = document.getElementById('report-month').value;
+            const reportContainer = document.getElementById('report-display-area');
+            reportContainer.innerHTML = `<div class="loading-spinner"></div> <p style="text-align:center;">جاري توليد تقرير الخدمات...</p>`;
+            await new Promise(r => setTimeout(r, 200));
+            const filtered = allServices.filter(srv => {
+                if (!srv.date) return false;
+                const d = new Date(srv.date);
+                return d.getFullYear() == year && (d.getMonth() + 1) == month;
+            });
+
+            if (filtered.length === 0) {
+                reportContainer.innerHTML = '<p style="text-align:center; padding: 20px;">لا توجد خدمات في هذه الفترة.</p>';
+                return;
+            }
+
+            let totalRevenue = 0, totalCosts = 0, reportRows = '';
+            for (const service of filtered) {
+                const revenue = service.price || 0;
+                const cost = service.cost || 0;
+                const profit = revenue - cost;
+                totalRevenue += revenue;
+                totalCosts += cost;
+                reportRows += `
+                    <tr>
+                        <td>${new Date(service.date).toLocaleDateString('en-GB')}</td>
+                        <td>${service.name || ''}</td>
+                        <td>${revenue.toFixed(2)} د.م</td>
+                        <td class="loss">${cost.toFixed(2)} د.م</td>
+                        <td class="${profit >= 0 ? 'profit' : 'loss'}">${profit.toFixed(2)} د.م</td>
+                    </tr>`;
+            }
+            const netProfit = totalRevenue - totalCosts;
+            const arabicMonths = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+            const reportHTML = `
+                <div class="report-header">
+                    <h2>كشف أرباح الخدمات</h2>
+                    <p>لشهر ${arabicMonths[month - 1]} ${year}</p>
+                </div>
+                <div class="summary-cards">
+                    <div class="card"><h3><i class="fas fa-concierge-bell"></i> إجمالي إيراد الخدمات</h3><div class="card-value total-sales">${totalRevenue.toFixed(2)} د.م</div></div>
+                    <div class="card"><h3><i class="fas fa-file-invoice"></i> إجمالي تكاليف الخدمات</h3><div class="card-value total-cost">${totalCosts.toFixed(2)} د.م</div></div>
+                    <div class="card"><h3><i class="fas fa-chart-pie"></i> صافي ربح الخدمات</h3><div class="card-value ${netProfit >= 0 ? 'total-profit' : 'loss'}">${netProfit.toFixed(2)} د.م</div></div>
+                </div>
+                <div style="overflow-x: auto;"><table id="report-table"><thead><tr><th>التاريخ</th><th>الخدمة</th><th>الإيراد</th><th>التكلفة</th><th>الربح</th></tr></thead><tbody>${reportRows}</tbody></table></div>`;
+            reportContainer.innerHTML = reportHTML;
+        }
+
+        function generateProductsReport() {
+            const reportContainer = document.getElementById('report-display-area');
+            reportContainer.innerHTML = `<div class="loading-spinner"></div> <p style="text-align:center;">جاري توليد تقرير المخزون...</p>`;
+            
+            setTimeout(() => {
+                let reportRows = '';
+                let totalStockValue = 0;
+                let totalStockItems = 0;
+                
+                if (!allProducts || allProducts.length === 0) {
+                    reportContainer.innerHTML = '<p style="text-align:center; padding: 20px;">لا توجد منتجات لعرضها.</p>';
+                    return;
+                }
+
+                allProducts.forEach(product => {
+                    const batches = product.batches ? Object.values(product.batches) : [];
+                    const totalQuantity = batches.reduce((sum, batch) => sum + (batch.quantity || 0), 0);
+                    const stockValue = batches.reduce((sum, batch) => sum + ((batch.cost || 0) * (batch.quantity || 0)), 0);
+                    totalStockValue += stockValue;
+                    totalStockItems += totalQuantity;
+                    reportRows += `
+                        <tr>
+                            <td>${product.id}</td>
+                            <td>${product.name}</td>
+                            <td>${totalQuantity}</td>
+                            <td class="loss">${stockValue.toFixed(2)} د.م</td>
+                        </tr>
+                    `;
+                });
+                
+                const reportHTML = `
+                    <div class="report-header">
+                        <h2>تقرير المنتجات والمخزون</h2>
+                        <p>حتى تاريخ ${new Date().toLocaleDateString('en-GB')}</p>
+                    </div>
+                    <div class="summary-cards">
+                        <div class="card"><h3><i class="fas fa-boxes"></i> عدد أنواع المنتجات</h3><div class="card-value">${allProducts.length}</div></div>
+                        <div class="card"><h3><i class="fas fa-box-open"></i> إجمالي القطع بالمخزون</h3><div class="card-value">${totalStockItems}</div></div>
+                        <div class="card"><h3><i class="fas fa-dollar-sign"></i> قيمة المخزون (بالتكلفة)</h3><div class="card-value total-cost">${totalStockValue.toFixed(2)} د.م</div></div>
+                    </div>
+                    <div style="overflow-x: auto;"><table id="product-report-table"><thead><tr><th>كود المنتج</th><th>اسم المنتج</th><th>الكمية الإجمالية</th><th>قيمة المخزون</th></tr></thead><tbody>${reportRows}</tbody></table></div>
+                `;
+                reportContainer.innerHTML = reportHTML;
+            }, 200);
+        }
+
+        function printReport(){ 
+            window.print();
+        }
+
+        function showInvoiceDetails(invoiceId){
+            const invoice = allInvoices.find(inv => inv.id === invoiceId);
+            if (!invoice) return;
+
+            const { totalCost, totalProfit, netFinalPrice } = calculateInvoiceTotals(invoice);
+           document.getElementById('modal-title').innerHTML = `<i class="fas fa-file-invoice"></i> تفاصيل الفاتورة ${invoice.id}`;
+            let itemsHTML = (invoice.items ? Object.values(invoice.items).map(item => {
+                const returnedText = (item.quantityReturned || 0) > 0 ? ` (مرتجع ${item.quantityReturned})` : '';
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}${returnedText}</td>
+                        <td>${(item.price || 0).toFixed(2)}</td>
+                        <td>${((item.price || 0) * (item.quantity || 0)).toFixed(2)}</td>
+                    </tr>`
+            }).join('') : '<tr><td colspan="4">لا توجد تفاصيل</td></tr>');
+
+            let detailsHTML = `
+                <p><strong>التاريخ:</strong> ${new Date(invoice.date).toLocaleString('en-GB')}</p>
+                <p><strong>طريقة الدفع:</strong> ${invoice.paymentMethod === 'cash' ? 'نقدي' : 'بطاقة'}</p>
+                <h4>المنتجات</h4>
+                <table><thead><tr><th>المنتج</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${itemsHTML}</tbody></table>
+                <h4>الملخص المالي</h4>
+                <p><strong>الإجمالي الفرعي الأصلي:</strong> ${(invoice.subTotal || 0).toFixed(2)} د.م</p>
+                <p><strong>الخصم:</strong> ${((invoice.subTotal || 0) - (invoice.finalPrice || 0)).toFixed(2)} د.م</p>
+                <p><strong>الإجمالي النهائي (قبل الإرجاع):</strong> <span>${(invoice.finalPrice || 0).toFixed(2)} د.م</span></p>
+                <hr>
+                <p><strong>إجمالي المبيعات الصافي:</strong> <span>${netFinalPrice.toFixed(2)} د.م</span></p>
+                <p><strong>التكلفة الإجمالية الصافية:</strong> <span class="loss">${totalCost.toFixed(2)} د.م</span></p>
+                <p><strong>صافي الربح:</strong> <span class="${totalProfit >= 0 ? 'profit' : 'loss'}">${totalProfit.toFixed(2)} د.م</span></p>
+            `;
+            document.getElementById('invoice-details').innerHTML = detailsHTML;
+            openModal('invoice-modal');
+        }
+
+        function showBatchesDetails(productId){
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            document.getElementById('batches-modal-title').innerHTML = `<i class="fas fa-layer-group"></i> دفعات المنتج: ${product.name}`;
+            const batchesContainer = document.getElementById('batches-details');
+            
+            const batches = product.batches ? Object.values(product.batches) : [];
+            if (batches.length === 0) {
+                batchesContainer.innerHTML = '<p>لا توجد دفعات لهذا المنتج.</p>';
+                openModal('batches-modal');
+                return;
+            }
+
+            let batchesHTML = '<table><thead><tr><th>رقم الدفعة</th><th>الكمية</th><th>التكلفة</th><th>السعر</th><th>تاريخ الصلاحية</th></tr></thead><tbody>';
+            batches.forEach(b => {
+                batchesHTML += `
+                    <tr>
+                        <td>${b.batchNumber || 'غير محدد'}</td>
+                        <td>${b.quantity || 0}</td>
+                        <td>${(b.cost || 0).toFixed(2)}</td>
+                        <td>${(b.price || 0).toFixed(2)}</td>
+                        <td>${b.expiryDate || ''}</td>
+                    </tr>
+                `;
+            });
+            batchesHTML += '</tbody></table>';
+
+            batchesContainer.innerHTML = batchesHTML;
+            openModal('batches-modal');
+        }
+
+        function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeModal(event.target.id);
+            }
+        }
+    </script>
+</body>
+</html>

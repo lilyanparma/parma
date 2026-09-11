@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>PARAMEDICAL LILYAN ROSE</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+  <script src="data/firebase-config.js"></script>
+  
+    <style>
+        /* ====== نظام الألوان المتطور ====== */
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #564FD9;
+            --primary-light: #E0DEFF;
+            --secondary: #FF6584;
+            --success: #4CAF50;
+            --success-gradient: linear-gradient(135deg, #4CAF50, #8BC34A);
+            --danger: #FF5252;
+            --danger-gradient: linear-gradient(135deg, #FF5252, #FF4081);
+            --warning: #FFAB00;
+            --warning-gradient: linear-gradient(135deg, #FFAB00, #FFCA28);
+            --info: #2196F3;
+            --info-gradient: linear-gradient(135deg, #2196F3, #03A9F4);
+            --light: #f8f9fa;
+            --dark: #1A1A2E;
+            --darker: #0d0d15;
+            --gray: #718096;
+            --light-gray: #EDF2F7;
+            --bg-color: linear-gradient(135deg, #F8FAFC, #e6f0ff);
+            --card-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --card-hover-shadow: 0 20px 50px rgba(108, 99, 255, 0.4);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* ====== الإعدادات العامة ====== */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            direction: rtl;
+            background: var(--bg-color);
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+            color: var(--dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ====== الهيدر المتطور ====== */
+        .header-container {
+            background: var(--glass-bg);
+            padding: 15px 30px;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        
+        .header-top-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: relative; 
+        }
+        
+        .header-title { 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 55px;
+            height: 55px;
+            border-radius: 16px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+        }
+        
+        .header-title h1 { 
+            margin: 0; 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            background: linear-gradient(to right, var(--primary-dark), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-title .subtitle {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        
+        .header-actions { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        
+        .header-btn {
+            background: var(--glass-bg);
+            color: var(--dark); 
+            width: 46px; 
+            height: 46px; 
+            border-radius: 14px;
+            font-size: 18px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center;
+            justify-content: center; 
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-btn:hover { 
+            background: var(--primary-light); 
+            color: var(--primary-dark);
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+        }
+        
+        .header-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            transform: translateY(-100%);
+            transition: var(--transition);
+        }
+        
+        .header-btn:hover::before {
+            transform: translateY(0);
+        }
+        
+        .lang-btn { 
+            font-size: 14px; 
+            padding: 0 15px; 
+            width: auto; 
+            gap: 8px; 
+            font-weight: 600; 
+            border-radius: 14px;
+        }
+        
+        .lang-btn svg { 
+            width: 20px; 
+            height: 14px; 
+        }
+        
+        /* --- التحسين: تعديل تخطيط الوضع السهل --- */
+        body.easy-mode-active #hamburger { 
+            visibility: hidden; /* إخفاء الزر مع الحفاظ على مساحته لتحقيق التوازن */
+        }
+
+        /* ====== مفاتيح تبديل الوحدات ====== */
+        .mode-switcher {
+            display: flex; 
+            justify-content: center; 
+            padding: 10px;
+            margin: 30px auto; 
+            max-width: 500px; 
+            background: var(--glass-bg);
+            border-radius: 18px; 
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px);
+        }
+        
+        .mode-btn {
+            flex: 1; 
+            padding: 14px 20px; 
+            border: none; 
+            border-radius: 14px;
+            cursor: pointer; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            color: var(--gray);
+            background: transparent; 
+            transition: var(--transition);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .mode-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+        }
+        
+        .mode-btn.active {
+            color: white; 
+            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.3); 
+        }
+        
+        .mode-btn.active::after {
+            opacity: 1;
+        }
+        
+        /* ====== جرس التنبيهات ====== */
+        .notification-bell { 
+            position: relative; 
+        }
+        
+        #notification-count { 
+            position: absolute; 
+            top: -5px; 
+            right: -5px; 
+            background: var(--danger-gradient); 
+            color: white; 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            font-size: 12px; 
+            font-weight: bold; 
+            display: none; /* Hidden by default */
+            align-items: center; 
+            justify-content: center; 
+            border: 2px solid white; 
+            box-shadow: 0 4px 8px rgba(255, 82, 82, 0.3);
+        }
+        
+        .notifications-panel { 
+            display: none; 
+            position: absolute; 
+            top: 70px; 
+            left: 0; 
+            width: 380px; 
+            background: var(--glass-bg); 
+            border-radius: 20px; 
+            box-shadow: var(--card-shadow);
+            z-index: 1001; 
+            max-height: 500px; 
+            overflow-y: auto; 
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+        }
+        
+        .notifications-panel.show { 
+            display: block; 
+            animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .notifications-header { 
+            padding: 20px; 
+            font-weight: bold; 
+            border-bottom: 1px solid var(--glass-border); 
+            background: var(--glass-bg);
+            position: sticky; 
+            top: 0; 
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+        
+        .clear-notifications {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+        
+        .clear-notifications:hover {
+            background: var(--primary-light);
+            transform: translateX(-3px);
+        }
+        
+        .notification-item { 
+            padding: 16px 20px; 
+            border-bottom: 1px solid var(--glass-border); 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 15px; 
+            font-size: 0.95rem; 
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .notification-item:hover {
+            background: rgba(224, 222, 255, 0.3);
+            transform: translateX(-5px);
+        }
+        
+        .notification-item:last-child { 
+            border-bottom: none; 
+        }
+        
+        .notification-item .icon { 
+            font-size: 20px; 
+            margin-top: 5px;
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+        
+        .notification-item .icon.warning { 
+            background: rgba(255, 171, 0, 0.15);
+            color: var(--warning); 
+        }
+        
+        .notification-item .icon.danger { 
+            background: rgba(255, 82, 82, 0.15);
+            color: var(--danger); 
+        }
+        
+        .notification-item .icon.info { 
+            background: rgba(33, 150, 243, 0.15);
+            color: var(--info); 
+        }
+        
+        .notification-item .details { 
+            flex: 1; 
+        }
+        
+        .notification-item .product-name { 
+            font-weight: 700; 
+            color: var(--dark); 
+            margin-bottom: 5px;
+            font-size: 1.05rem;
+        }
+        
+        .notification-item .message { 
+            color: var(--gray); 
+            font-size: 0.9rem;
+        }
+        
+        .notification-time {
+            color: var(--gray);
+            font-size: 0.8rem;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        #no-notifications { 
+            padding: 40px 20px; 
+            text-align: center; 
+            color: var(--gray); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        #no-notifications i {
+            font-size: 3rem;
+            color: var(--light-gray);
+            opacity: 0.7;
+        }
+
+        /* ====== القائمة الجانبية الذكية ====== */
+        .sidebar { 
+            position: fixed; 
+            top: 0; 
+            bottom: 0; 
+            right: -350px; 
+            width: 320px; 
+            background-color: var(--glass-bg); 
+            padding: 25px; 
+            overflow-y: auto; 
+            transition: var(--transition); 
+            z-index: 1000; 
+            box-shadow: -10px 0 30px rgba(0,0,0, 0.1);
+            border-left: 1px solid var(--glass-border);
+            backdrop-filter: blur(15px);
+        }
+        
+        .sidebar.active { 
+            right: 0; 
+        }
+        
+        .close-btn { 
+            position: absolute; 
+            top: 20px; 
+            left: 20px; 
+            font-size: 26px; 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            cursor: pointer; 
+            color: var(--dark); 
+            transition: var(--transition); 
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .close-btn:hover { 
+            background: var(--primary-light); 
+            color: var(--primary-dark);
+            transform: rotate(90deg);
+        }
+        
+        .sidebar-header {
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 3px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+        }
+        
+        .sidebar-header h3 {
+            color: var(--dark);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        .sidebar ul { 
+            list-style: none; 
+            margin-top: 20px; 
+        }
+        
+        .sidebar ul li { 
+            margin-bottom: 10px; 
+        }
+        
+        .sidebar ul li a { 
+            text-decoration: none; 
+            color: var(--dark); 
+            font-size: 1.05rem; 
+            display: flex; 
+            align-items: center; 
+            padding: 15px 20px; 
+            border-radius: 14px; 
+            transition: var(--transition); 
+            font-weight: 600; 
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        
+        .sidebar ul li a i { 
+            margin-left: 15px; 
+            font-size: 20px; 
+            width: 30px; 
+            text-align: center; 
+            color: var(--primary); 
+            transition: var(--transition);
+        }
+        
+        .sidebar ul li a::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            transform: translateX(100%);
+            transition: var(--transition);
+        }
+        
+        .sidebar ul li a:hover { 
+            background: var(--primary-light); 
+            color: var(--primary-dark);
+            transform: translateX(-10px);
+            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.2);
+        }
+        
+        .sidebar ul li a:hover::after {
+            transform: translateX(0);
+        }
+        
+        .sidebar ul li a:hover i {
+            transform: scale(1.2);
+        }
+        
+        .sidebar ul li a.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+        }
+        
+        .sidebar ul li a.active i {
+            color: white;
+        }
+
+        /* ====== طبقة التعتيم ====== */
+        .overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(26, 26, 46, 0.7); 
+            z-index: 999; 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.4s ease, visibility 0.4s ease; 
+            backdrop-filter: blur(5px); 
+        }
+        
+        .overlay.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+
+        /* ====== المحتوى الرئيسي ====== */
+        main { 
+            padding: 0 25px 40px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+        
+        main h2 { 
+            text-align: center; 
+            margin: 40px 0 30px; 
+            color: var(--dark); 
+            font-size: 2.2rem; 
+            font-weight: 800; 
+            position: relative; 
+            padding-bottom: 20px; 
+        }
+        
+        main h2::after { 
+            content: ""; 
+            position: absolute; 
+            bottom: 0; 
+            right: 50%; 
+            transform: translateX(50%); 
+            width: 100px; 
+            height: 5px; 
+            background: linear-gradient(to right, var(--primary), var(--secondary)); 
+            border-radius: 3px; 
+        }
+        
+        .section-description {
+            text-align: center;
+            color: var(--gray);
+            max-width: 800px;
+            margin: 0 auto 40px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* ====== بطاقات المؤشرات الرئيسية ====== */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .kpi-card {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--card-hover-shadow);
+        }
+        
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+        
+        .kpi-card h3 {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+                
+        .kpi-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+        
+        .kpi-chart-container {
+            position: relative;
+            height: 90px;
+            width: 90px;
+            flex-shrink: 0;
+        }
+        
+        .kpi-chart {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .kpi-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .kpi-details {
+            text-align: left;
+            flex-grow: 1;
+        }
+        
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        
+        .kpi-description {
+            font-size: 0.9rem;
+            color: var(--gray);
+            line-height: 1.5;
+        }
+
+        /* ====== الرسوم البيانية ====== */
+        .charts-grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        @media (min-width: 1200px) {
+            .charts-grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .chart-container { 
+            position: relative; 
+            width: 100%; 
+            height: 480px; 
+            background: var(--glass-bg); 
+            border-radius: 20px; 
+            padding: 25px; 
+            box-shadow: var(--card-shadow); 
+            border: 1px solid var(--glass-border); 
+            transition: var(--transition); 
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-container:hover { 
+            transform: translateY(-10px); 
+            box-shadow: var(--card-hover-shadow); 
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        
+        .chart-title {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .chart-action-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+        
+        .chart-action-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+        
+        .chart-placeholder { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100%; 
+            color: var(--gray); 
+            flex-direction: column; 
+            gap: 20px; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--glass-bg);
+            z-index: 5;
+        }
+        
+        .chart-canvas-container {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 60px);
+            flex-grow: 1;
+        }
+        
+        .chart-canvas-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .spinner { 
+            border: 5px solid rgba(0, 0, 0, 0.1); 
+            border-radius: 50%; 
+            border-top: 5px solid var(--primary); 
+            width: 60px; 
+            height: 60px; 
+            animation: spin 1.5s linear infinite; 
+        }
+        
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+
+        /* ====== شبكة التطبيقات ====== */
+        .app-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 30px; 
+            padding-top: 20px; 
+        }
+        
+        .app-card { 
+            background: var(--glass-bg); 
+            border-radius: 20px; 
+            padding: 30px 20px; 
+            text-align: center; 
+            text-decoration: none; 
+            color: var(--dark); 
+            box-shadow: var(--card-shadow); 
+            border: 1px solid var(--glass-border); 
+            transition: var(--transition); 
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+        
+        .app-card:hover { 
+            transform: translateY(-12px); 
+            box-shadow: var(--card-hover-shadow); 
+            color: var(--primary-dark); 
+        }
+        
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            transform: translateY(-100%);
+            transition: var(--transition);
+        }
+        
+        .app-card:hover::before {
+            transform: translateY(0);
+        }
+        
+        .app-card i { 
+            font-size: 3rem; 
+            margin-bottom: 20px; 
+            display: block; 
+            color: var(--primary); 
+            transition: var(--transition); 
+            text-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+        }
+        
+        .app-card:hover i { 
+            color: var(--secondary); 
+            transform: scale(1.15) rotate(5deg);
+        }
+        
+        .app-card span { 
+            font-weight: 700; 
+            font-size: 1.1rem; 
+            display: block;
+            transition: var(--transition);
+        }
+        
+        .app-card:hover span {
+            letter-spacing: 0.5px;
+        }
+        
+        .app-card .badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--secondary);
+            color: white;
+            font-size: 0.8rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(255, 101, 132, 0.3);
+        }
+
+        /* ====== التذييل ====== */
+        footer { 
+            background: var(--darker); 
+            color: var(--light); 
+            text-align: center; 
+            padding: 25px; 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+        }
+        
+        footer p { 
+            margin: 0; 
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+        }
+        
+        .footer-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            opacity: 0.7;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-light);
+            opacity: 1;
+            transform: translateY(-3px);
+        }
+
+        /* ====== التجاوب مع الشاشات المختلفة ====== */
+        @media (max-width: 1200px) {
+            .kpi-container {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+            
+            .app-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .header-title h1 { 
+                font-size: 1.6rem; 
+            }
+            
+            .kpi-card {
+                padding: 20px;
+            }
+            
+            .kpi-value {
+                font-size: 2rem;
+            }
+            
+            .chart-container {
+                height: 400px;
+                padding: 20px;
+            }
+            
+            .app-card {
+                padding: 25px 15px;
+            }
+            
+            .app-card i {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body { padding-bottom: 70px; }
+            
+            .header-container { padding: 12px 20px; }
+            
+            .header-title h1 { font-size: 1.4rem; }
+            
+            .header-btn { 
+                width: 42px; 
+                height: 42px; 
+                font-size: 16px; 
+                border-radius: 12px;
+            }
+            
+            .lang-btn { padding: 0 12px; font-size: 13px; }
+            
+            main { padding: 0 20px 30px; }
+            
+            main h2 { font-size: 1.8rem; }
+            
+            .kpi-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container { height: 350px; }
+            
+            .notifications-panel { width: 320px; }
+            
+            .app-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+            
+            .app-card i { font-size: 2.2rem; }
+            
+            .app-card span { font-size: 1rem; }
+        }
+        
+        @media (max-width: 576px) {
+            .header-container { padding: 10px 15px; }
+            
+            .header-title h1 { font-size: 1.3rem; }
+            
+            .header-actions { gap: 10px; }
+            
+            .lang-btn span { display: none; }
+            
+            .lang-btn { width: 42px; }
+            
+            main { padding: 0 15px 25px; }
+            
+            main h2 { font-size: 1.6rem; margin-bottom: 30px; }
+            
+            .chart-container { height: 300px; padding: 15px; }
+            
+            .notifications-panel { 
+                left: 50%; 
+                transform: translateX(-50%); 
+                width: 90vw; 
+                max-width: 320px; 
+            }
+            
+            .app-grid { grid-template-columns: repeat(2, 1fr); }
+            
+            .sidebar { width: 280px; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="header-top-row">
+            <button class="header-btn" id="hamburger"><i class="fas fa-bars"></i></button>
+            <div class="header-title">
+                <div class="logo"><i class="fas fa-heartbeat"></i></div>
+                <div class="header-title-text">
+                    <h1 id="siteTitle">LILYAN ROSE</h1>
+                </div>
+            </div>
+            <div class="header-actions">
+                 <div class="notification-bell">
+                    <button class="header-btn" id="bell-icon" onclick="toggleNotifications()"> 
+                        <i class="fas fa-bell"></i> 
+                        <span id="notification-count"></span> 
+                    </button>
+                    <div id="notifications-panel" class="notifications-panel">
+                        <div class="notifications-header">
+                            <span>التنبيهات</span>
+                            <button class="clear-notifications" onclick="clearNotifications()">مسح الكل</button>
+                        </div>
+                        <div id="notifications-list"> 
+                           <div id="no-notifications">
+                                <i class="fas fa-bell-slash"></i>
+                                <span>لا توجد تنبيهات حالياً.</span>
+                           </div> 
+                        </div>
+                    </div>
+                </div>
+                <button class="header-btn lang-btn" id="langBtn">
+                    <svg id="flagIcon" viewBox="0 0 72 48"><path fill="#F0F0F0" d="M0 0h72v48H0z"/><path fill="#D80027" d="M48 0h24v48H48z"/><path fill="#0052B4" d="M0 0h24v48H0z"/></svg>
+                    <span id="langText">FR</span>
+                </button>
+            </div>
+        </div>
+    </div>
+  
+    <div class="mode-switcher">
+        <button id="proModeBtn" class="mode-btn active"><i class="fas fa-chart-pie"></i><span data-lang-key="pro_mode">الوضع الاحترافي</span></button>
+        <button id="easyModeBtn" class="mode-btn"><i class="fas fa-th-large"></i><span data-lang-key="easy_mode">الوضع السهل</span></button>
+    </div>
+
+    <nav id="sidebar" class="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">&times;</button>
+        <div class="sidebar-header">
+            <div class="user-avatar"><i class="fas fa-user-shield"></i></div>
+            <h3 id="userName"></h3>
+            <p id="userRole"></p>
+        </div>
+        <ul>
+            <li><a href="index.html" class="active"><i class="fas fa-home"></i><span data-lang-key="menu_home">الرئيسية</span></a></li>
+            <li id="addUserMenuLink"><a href="add-user.html"><i class="fas fa-user-plus"></i><span data-lang-key="menu_add_user">إضافة مستخدم</span></a></li>
+            <li id="productsMenuLink"><a href="products.html"><i class="fas fa-box-open"></i><span data-lang-key="menu_products">إدارة المنتجات</span></a></li>
+            <li><a href="view-products.html"><i class="fas fa-list-ul"></i><span data-lang-key="menu_view_products">عرض المنتجات</span></a></li>
+            <li><a href="sell-products.html"><i class="fas fa-cash-register"></i><span data-lang-key="menu_sell_products">بيع المنتجات</span></a></li>
+            <li><a href="services.html"><i class="fas fa-concierge-bell"></i><span data-lang-key="menu_services">خدمات اضافية</span></a></li>
+            <li id="profitsMenuLink"><a href="profits.html"><i class="fas fa-file-invoice-dollar"></i><span data-lang-key="menu_profits">الارباح والحسابات</span></a></li>
+            <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span data-lang-key="menu_logout">تسجيل الخروج</span></a></li>
+        </ul>
+    </nav>
+    <div id="overlay" class="overlay"></div>
+
+    <main id="main-content">
+        <div id="pro-mode-view">
+            <div class="kpi-container">
+                <div class="kpi-card">
+                    <h3><i class="fas fa-bullseye"></i> هدف المبيعات الشهري</h3>
+                    <div class="kpi-content">
+                        <div class="kpi-details">
+                            <div id="salesTargetValue" class="kpi-value"></div>
+                            <div id="salesTargetDesc" class="kpi-description"></div>
+                        </div>
+                        <div class="kpi-chart-container">
+                            <canvas id="salesTargetChart" class="kpi-chart"></canvas>
+                            <div id="salesTargetPercentage" class="kpi-percentage"></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="kpi-card">
+                    <h3><i class="fas fa-calendar-times"></i> المخزون منتهي الصلاحية</h3>
+                    <div class="kpi-content">
+                         <div class="kpi-details">
+                            <div id="expiredValue" class="kpi-value"></div>
+                            <div id="expiredDesc" class="kpi-description"></div>
+                        </div>
+                        <div class="kpi-chart-container">
+                            <canvas id="expiredChart" class="kpi-chart"></canvas>
+                            <div id="expiredPercentage" class="kpi-percentage"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <h3><i class="fas fa-hand-holding-usd"></i> هامش الربح (الشهر الحالي)</h3>
+                     <div class="kpi-content">
+                        <div class="kpi-details">
+                            <div id="profitMarginValue" class="kpi-value"></div>
+                            <div id="profitMarginDesc" class="kpi-description"></div>
+                        </div>
+                        <div class="kpi-chart-container">
+                            <canvas id="profitMarginChart" class="kpi-chart"></canvas>
+                            <div id="profitMarginPercentage" class="kpi-percentage"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 data-lang-key="main_title">تحليل الأداء</h2>
+            <div class="charts-grid-container">
+                <div class="chart-container">
+                    <div class="chart-header"><h3 class="chart-title">المبيعات الشهرية (آخر 6 أشهر)</h3></div>
+                    <div id="salesChartPlaceholder" class="chart-placeholder"><div class="spinner"></div></div>
+                    <div class="chart-canvas-container">
+                        <canvas id="salesChart" style="display: none;"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                     <div class="chart-header"><h3 class="chart-title">المنتجات الأكثر مبيعاً (حسب الإيراد)</h3></div>
+                    <div id="doughnutChartPlaceholder" class="chart-placeholder"><div class="spinner"></div></div>
+                    <div class="chart-canvas-container">
+                        <canvas id="doughnutChart" style="display: none;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="easy-mode-view" style="display: none;">
+             <h2 data-lang-key="easy_mode_title">الوصول السريع</h2>
+            <div class="app-grid">
+                <a href="add-user.html" class="app-card" id="easyModeAddUserLink"> <i class="fas fa-user-plus"></i> <span data-lang-key="menu_add_user">إضافة مستخدم</span> </a>
+                <a href="products.html" class="app-card" id="easyModeProductsLink"> <i class="fas fa-box-open"></i> <span data-lang-key="menu_products">إدارة المنتجات</span> </a>
+                <a href="view-products.html" class="app-card"> <i class="fas fa-list-ul"></i> <span data-lang-key="menu_view_products">عرض المنتجات</span> </a>
+                <a href="sell-products.html" class="app-card"> <i class="fas fa-cash-register"></i> <span data-lang-key="menu_sell_products">نقطة البيع</span> </a>
+                <a href="services.html" class="app-card"> <i class="fas fa-concierge-bell"></i> <span data-lang-key="menu_services">الخدمات</span> </a>
+                <a href="profits.html" class="app-card" id="easyModeProfitsLink"> <i class="fas fa-file-invoice-dollar"></i> <span data-lang-key="menu_profits">الأرباح والتقارير</span> </a>
+                <a href="#" class="app-card" onclick="setMode('pro'); return false;"> <i class="fas fa-chart-pie"></i> <span data-lang-key="pro_mode">الوضع الاحترافي</span> </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p data-lang-key="footer_text">جميع الحقوق محفوظة &copy; 2025 LILYAN ROSE</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+    <script>
+        // ========= Translations Logic =========
+        let translations = {};
+        let currentLang = localStorage.getItem('language') || 'ar';
+
+        async function fetchTranslations() {
+            try {
+                const response = await fetch('lang/fr.json');
+                translations['fr'] = await response.json();
+                
+                translations['ar'] = {
+                    "site_title": "PARAMEDICAL LILYAN ROSE", "menu_home": "الرئيسية",
+                    "menu_add_user": "إضافة مستخدم", "menu_products": "إدارة المنتجات",
+                    "menu_view_products": "عرض المنتجات", "menu_sell_products": "بيع المنتجات",
+                    "menu_services": "خدمات اضافية", "menu_profits": "الارباح والحسابات",
+                    "menu_logout": "تسجيل الخروج", "pro_mode": "الوضع الاحترافي",
+                    "easy_mode": "الوضع السهل", "footer_text": "جميع الحقوق محفوظة © 2025 LILYAN ROSE",
+                    "main_title": "تحليل الأداء", "easy_mode_title": "الوصول السريع"
+                };
+
+            } catch (error) { console.error('Could not load translation file:', error); }
+        }
+        
+        const ar_flag = `<svg id="flagIcon" viewBox="0 0 60 40"><rect width="60" height="40" fill="#C1272D"></rect><path d="M30 10 L35 18 L43 18 L37 23 L39 31 L30 26 L21 31 L23 23 L17 18 L25 18 Z" fill="#006233"></path></svg>`;
+        const fr_flag = `<svg id="flagIcon" viewBox="0 0 72 48"><path fill="#F0F0F0" d="M0 0h72v48H0z"/><path fill="#D80027" d="M48 0h24v48H48z"/><path fill="#0052B4" d="M0 0h24v48H0z"/></svg>`;
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            const langText = document.getElementById('langText');
+            const flagIconContainer = document.getElementById('langBtn');
+
+            if (lang === 'ar') {
+                if(langText) langText.textContent = 'AR';
+                if(flagIconContainer) flagIconContainer.querySelector('svg').outerHTML = ar_flag;
+            } else {
+                if(langText) langText.textContent = 'FR';
+                if(flagIconContainer) flagIconContainer.querySelector('svg').outerHTML = fr_flag;
+            }
+        }
+
+        function toggleLanguage() {
+            setLanguage(currentLang === 'ar' ? 'fr' : 'ar');
+        }
+
+        // ========= Authentication & Initialization =========
+        document.addEventListener('DOMContentLoaded', async function() {
+            await fetchTranslations();
+            setLanguage(currentLang);
+
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    firebase.database().ref('user_roles/' + user.uid).once('value').then(snapshot => {
+                        if (snapshot.exists()) {
+                            initializeApp(user, snapshot.val().name, snapshot.val().role);
+                        } else { firebase.auth().signOut(); }
+                    }).catch(err => { console.error(err); firebase.auth().signOut(); });
+                } else { window.location.href = 'login.html'; }
+            });
+        });
+
+        function initializeApp(user, userName, userRole) {
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userRole').textContent = userRole;
+
+            const adminOnlyLinks = ['profitsMenuLink', 'addUserMenuLink', 'productsMenuLink', 'easyModeProfitsLink', 'easyModeAddUserLink', 'easyModeProductsLink'];
+            if (userRole === 'موظف') {
+                adminOnlyLinks.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+            }
+            setupEventListeners();
+            loadSavedMode();
+            
+            // --- تم التفعيل ---
+            generateAndRenderKPIs();
+            generateAndRenderCharts();
+            fetchStockAndExpiryAlerts();
+        }
+
+        // ========= Global UI Elements & State =========
+        let isSidebarOpen = false;
+        let kpiChartInstances = {};
+
+        // ========= Event Listeners Setup =========
+        function setupEventListeners() {
+            document.getElementById('hamburger').addEventListener('click', toggleSidebar);
+            document.getElementById('overlay').addEventListener('click', toggleSidebar);
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('langBtn').addEventListener('click', toggleLanguage);
+            document.getElementById('proModeBtn').addEventListener('click', () => setMode('pro'));
+            document.getElementById('easyModeBtn').addEventListener('click', () => setMode('easy'));
+        }
+
+        // ========= Core UI & Auth Functions =========
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+        function toggleNotifications() {
+            document.getElementById('notifications-panel').classList.toggle('show');
+        }
+        function clearNotifications() {
+             document.getElementById('notifications-list').innerHTML = `
+                <div id="no-notifications">
+                    <i class="fas fa-check-circle"></i>
+                    <span>لا توجد تنبيهات جديدة.</span>
+                </div>`;
+            document.getElementById('notification-count').style.display = 'none';
+        }
+        function setMode(mode) {
+             const proModeBtn = document.getElementById('proModeBtn');
+             const easyModeBtn = document.getElementById('easyModeBtn');
+             const proModeView = document.getElementById('pro-mode-view');
+             const easyModeView = document.getElementById('easy-mode-view');
+             if(!proModeBtn || !easyModeBtn) return;
+             const isPro = mode === 'pro';
+             proModeBtn.classList.toggle('active', isPro);
+             easyModeBtn.classList.toggle('active', !isPro);
+             if(proModeView) proModeView.style.display = isPro ? 'block' : 'none';
+             if(easyModeView) easyModeView.style.display = isPro ? 'none' : 'block';
+             document.body.classList.toggle('easy-mode-active', !isPro);
+             localStorage.setItem('dashboardMode', mode);
+        }
+        function loadSavedMode() {
+            const savedMode = localStorage.getItem('dashboardMode') || 'pro';
+            setMode(savedMode);
+        }
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            });
+        }
+        
+        // ========= Chart & Data Functions (START OF IMPLEMENTATION) =========
+        
+        // Helper to format currency
+        const formatCurrency = (value) => `${(value || 0).toFixed(2)} د.م`;
+
+        // Helper to create small KPI doughnut charts
+        function createKpiDoughnut(canvasId, percentage) {
+            if (kpiChartInstances[canvasId]) {
+                kpiChartInstances[canvasId].destroy();
+            }
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            kpiChartInstances[canvasId] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [
+                            percentage > 80 ? 'var(--success)' : percentage > 50 ? 'var(--warning)' : 'var(--danger)',
+                            '#e9ecef'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '80%',
+                    plugins: { tooltip: { enabled: false } },
+                    animation: { animateScale: true, animateRotate: true }
+                }
+            });
+        }
+
+        async function generateAndRenderKPIs() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            // --- 1. Sales Target KPI ---
+            const monthlySalesTarget = 150000; // يمكن تغيير هذا الرقم حسب الحاجة
+            const invoicesSnap = await database.ref('invoices').once('value');
+            const invoices = invoicesSnap.val() || {};
+            let currentMonthSales = 0;
+            
+            Object.values(invoices).forEach(inv => {
+                const invDate = new Date(inv.date);
+                if (invDate.getFullYear() === currentYear && invDate.getMonth() === currentMonth) {
+                    currentMonthSales += inv.finalPrice;
+                }
+            });
+            const salesPercentage = Math.min((currentMonthSales / monthlySalesTarget) * 100, 100);
+            
+            document.getElementById('salesTargetValue').textContent = formatCurrency(currentMonthSales);
+            document.getElementById('salesTargetDesc').textContent = `من الهدف: ${formatCurrency(monthlySalesTarget)}`;
+            document.getElementById('salesTargetPercentage').textContent = `${Math.round(salesPercentage)}%`;
+            createKpiDoughnut('salesTargetChart', salesPercentage);
+
+            // --- 2. Expired Stock KPI ---
+            const productsSnap = await database.ref('products').once('value');
+            const products = productsSnap.val() || {};
+            let totalItems = 0, expiredItems = 0;
+            
+            Object.values(products).forEach(prod => {
+                if(prod.batches) {
+                    Object.values(prod.batches).forEach(batch => {
+                        const quantity = Number(batch.quantity) || 0;
+                        totalItems += quantity;
+                        if (new Date(batch.expiryDate) < now) {
+                            expiredItems += quantity;
+                        }
+                    });
+                }
+            });
+            const expiredPercentage = totalItems > 0 ? (expiredItems / totalItems) * 100 : 0;
+            document.getElementById('expiredValue').textContent = `${expiredItems} قطعة`;
+            document.getElementById('expiredDesc').textContent = `من إجمالي ${totalItems} قطعة`;
+            document.getElementById('expiredPercentage').textContent = `${Math.round(expiredPercentage)}%`;
+            createKpiDoughnut('expiredChart', 100 - expiredPercentage); // Reverse for "good" items
+
+            // --- 3. Profit Margin KPI ---
+            const servicesSnap = await database.ref('services').once('value');
+            const services = servicesSnap.val() || {};
+            let totalProfit = 0, totalRevenue = 0;
+
+            Object.values(invoices).forEach(inv => {
+                const invDate = new Date(inv.date);
+                if (invDate.getFullYear() === currentYear && invDate.getMonth() === currentMonth) {
+                    totalRevenue += inv.finalPrice;
+                    if(inv.items) {
+                        Object.values(inv.items).forEach(item => {
+                            const profit = (item.price - (item.cost || 0)) * item.quantity;
+                            totalProfit += profit;
+                        });
+                    }
+                }
+            });
+            Object.values(services).forEach(srv => {
+                 const srvDate = new Date(srv.date);
+                if (srvDate.getFullYear() === currentYear && srvDate.getMonth() === currentMonth) {
+                    totalRevenue += srv.price;
+                    totalProfit += (srv.price - (srv.cost || 0));
+                }
+            });
+
+            const profitMarginPercentage = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+            document.getElementById('profitMarginValue').textContent = formatCurrency(totalProfit);
+            document.getElementById('profitMarginDesc').textContent = `من إيرادات: ${formatCurrency(totalRevenue)}`;
+            document.getElementById('profitMarginPercentage').textContent = `${Math.round(profitMarginPercentage)}%`;
+            createKpiDoughnut('profitMarginChart', profitMarginPercentage);
+        }
+
+        async function generateAndRenderCharts() {
+            // --- 1. Main Sales Chart (Line Chart) ---
+            const invoicesSnap = await database.ref('invoices').once('value');
+            const invoices = invoicesSnap.val() || {};
+            const monthlySales = {};
+            const monthLabels = [];
+
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date();
+                d.setMonth(d.getMonth() - i);
+                const monthKey = `${d.getFullYear()}-${d.getMonth() + 1}`;
+                monthLabels.push(d.toLocaleDateString('ar', { month: 'short' }));
+                monthlySales[monthKey] = 0;
+            }
+
+            Object.values(invoices).forEach(inv => {
+                const d = new Date(inv.date);
+                const monthKey = `${d.getFullYear()}-${d.getMonth() + 1}`;
+                if (monthlySales[monthKey] !== undefined) {
+                    monthlySales[monthKey] += inv.finalPrice;
+                }
+            });
+            
+            const salesChartCtx = document.getElementById('salesChart').getContext('2d');
+            document.getElementById('salesChartPlaceholder').style.display = 'none';
+            document.getElementById('salesChart').style.display = 'block';
+
+            new Chart(salesChartCtx, {
+                type: 'line',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: 'إجمالي المبيعات',
+                        data: Object.values(monthlySales),
+                        borderColor: 'var(--primary)',
+                        backgroundColor: 'rgba(108, 99, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // --- 2. Doughnut Chart (Top Selling Products) ---
+            const productSales = {};
+            Object.values(invoices).forEach(inv => {
+                if (inv.items) {
+                    Object.values(inv.items).forEach(item => {
+                        productSales[item.name] = (productSales[item.name] || 0) + item.itemTotal;
+                    });
+                }
+            });
+
+            const topProducts = Object.entries(productSales)
+                .sort(([,a],[,b]) => b - a)
+                .slice(0, 5);
+
+            const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+            document.getElementById('doughnutChartPlaceholder').style.display = 'none';
+            document.getElementById('doughnutChart').style.display = 'block';
+
+            new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: topProducts.map(p => p[0]),
+                    datasets: [{
+                        label: 'إيرادات المنتجات',
+                        data: topProducts.map(p => p[1]),
+                        backgroundColor: ['#6C63FF', '#FF6584', '#4CAF50', '#FFAB00', '#2196F3'],
+                        hoverOffset: 4
+                    }]
+                },
+                 options: { 
+                     responsive: true, 
+                     maintainAspectRatio: false,
+                     plugins: {
+                         legend: {
+                             position: 'bottom',
+                             labels: {
+                                 padding: 15,
+                                 font: {
+                                     family: 'Tajawal',
+                                     size: 12
+                                 }
+                             }
+                         }
+                     }
+                 }
+            });
+        }
+        
+        async function fetchStockAndExpiryAlerts() {
+            const productsSnap = await database.ref('products').once('value');
+            const products = productsSnap.val() || {};
+            const notificationsList = document.getElementById('notifications-list');
+            notificationsList.innerHTML = '';
+            let alertCount = 0;
+
+            const now = new Date();
+            const expiryLimitDate = new Date();
+            expiryLimitDate.setDate(now.getDate() + 30);
+            
+            Object.values(products).forEach(prod => {
+                let totalQuantity = 0;
+                 if (prod.batches) {
+                    totalQuantity = Object.values(prod.batches).reduce((sum, b) => sum + (Number(b.quantity) || 0), 0);
+                    
+                    Object.values(prod.batches).forEach(batch => {
+                        const expiryDate = new Date(batch.expiryDate);
+                        if (expiryDate < expiryLimitDate && expiryDate > now) {
+                             alertCount++;
+                             const item = `<div class="notification-item">
+                                <div class="icon warning"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="details">
+                                    <div class="product-name">${prod.name}</div>
+                                    <div class="message">الدفعة ${batch.batchNumber || ''} ستنتهي صلاحيتها قريباً.</div>
+                                    <div class="notification-time">${expiryDate.toLocaleDateString()}</div>
+                                </div>
+                             </div>`;
+                             notificationsList.innerHTML += item;
+                        }
+                    });
+                }
+                 if (totalQuantity > 0 && totalQuantity <= 5) {
+                    alertCount++;
+                    const item = `<div class="notification-item">
+                       <div class="icon info"><i class="fas fa-box-open"></i></div>
+                       <div class="details">
+                           <div class="product-name">${prod.name}</div>
+                           <div class="message">كمية المخزون قليلة. المتبقي: ${totalQuantity}</div>
+                       </div>
+                    </div>`;
+                    notificationsList.innerHTML += item;
+                }
+            });
+            
+            const countEl = document.getElementById('notification-count');
+            if(alertCount > 0) {
+                countEl.textContent = alertCount;
+                countEl.style.display = 'flex';
+                document.querySelector('.clear-notifications').style.display = 'block';
+            } else {
+                notificationsList.innerHTML = `
+                <div id="no-notifications">
+                    <i class="fas fa-bell-slash"></i>
+                    <span>لا توجد تنبيهات حالياً.</span>
+                </div>`;
+                countEl.style.display = 'none';
+                document.querySelector('.clear-notifications').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
